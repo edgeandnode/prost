@@ -27,8 +27,14 @@ use crate::encoding::{decode_varint, encode_varint, encoded_len_varint};
 
 // See `encoding::DecodeContext` for more info.
 // 100 is the default recursion limit in the C++ implementation.
+//
+// Fork: This is the only change in our fork, bumping from 100 to 1000, to allow deserialzing larger
+// queries serialized with datafusion-proto. This is preferable to setting `no-recursion-limit`, for
+// two reasons:
+// 1. It's more secure, as it still prevents stack overflow attacks, just with a larger limit.
+// 2. `no-recursion-limit` did not work, in our testing it work on macos but not on linux.
 #[cfg(not(feature = "no-recursion-limit"))]
-const RECURSION_LIMIT: u32 = 100;
+const RECURSION_LIMIT: u32 = 1000;
 
 /// Encodes a length delimiter to the buffer.
 ///
